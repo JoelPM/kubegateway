@@ -12,14 +12,14 @@ import (
 	"sync"
 	"time"
 
-	kapi "github.com/GoogleCloudPlatform/kubernetes/pkg/api"
-	kclient "github.com/GoogleCloudPlatform/kubernetes/pkg/client"
-	kcache "github.com/GoogleCloudPlatform/kubernetes/pkg/client/cache"
-	kclientcmd "github.com/GoogleCloudPlatform/kubernetes/pkg/client/clientcmd"
-	kframework "github.com/GoogleCloudPlatform/kubernetes/pkg/controller/framework"
-	kSelector "github.com/GoogleCloudPlatform/kubernetes/pkg/fields"
-	"github.com/GoogleCloudPlatform/kubernetes/pkg/util"
-	"github.com/golang/glog"
+	kapi "github.com/joelpm/kubegateway/Godeps/_workspace/src/github.com/GoogleCloudPlatform/kubernetes/pkg/api"
+	kclient "github.com/joelpm/kubegateway/Godeps/_workspace/src/github.com/GoogleCloudPlatform/kubernetes/pkg/client"
+	kcache "github.com/joelpm/kubegateway/Godeps/_workspace/src/github.com/GoogleCloudPlatform/kubernetes/pkg/client/cache"
+	kclientcmd "github.com/joelpm/kubegateway/Godeps/_workspace/src/github.com/GoogleCloudPlatform/kubernetes/pkg/client/clientcmd"
+	kframework "github.com/joelpm/kubegateway/Godeps/_workspace/src/github.com/GoogleCloudPlatform/kubernetes/pkg/controller/framework"
+	kSelector "github.com/joelpm/kubegateway/Godeps/_workspace/src/github.com/GoogleCloudPlatform/kubernetes/pkg/fields"
+	"github.com/joelpm/kubegateway/Godeps/_workspace/src/github.com/GoogleCloudPlatform/kubernetes/pkg/util"
+	"github.com/joelpm/kubegateway/Godeps/_workspace/src/github.com/golang/glog"
 )
 
 var (
