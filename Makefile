@@ -1,46 +1,44 @@
-# Makefile for the Docker image joelpm/kubegateway
-# MAINTAINER: Joel Meyer <joel.meyer@gmail.com>
+# Makefile for the Docker image gcr.io/google_containers/kubegateway
+# MAINTAINER: Tim Hockin <thockin@google.com>
+# If you update this image please bump the tag value before pushing.
 
-TAG = 0.0.0
-PREFIX = joelpm/kubegateway
+.PHONY: all kubegateway container push clean test
 
 APP = kubegateway
 
-default: test
+TAG = 0.0.2
+PREFIX = joelpm
 
-setup:  
-	go get github.com/mailgun/godebug
-	go get github.com/tools/godep
 
-buildgo:  
-	CGO_ENABLED=0 GOOS=linux godep go build -ldflags "-s" -a -installsuffix cgo -o $(APP) .
+DEVCONTAINER = $(PREFIX)/$(APP)_dev:1.4.2
 
-builddocker: buildgo
-	docker build --rm -t $(PREFIX)/$(APP):$(TAG) .
+
+all: container
+
+.devcontainer:
+	docker build -t $(DEVCONTAINER) .
+	docker inspect -f '{{.Id}}' $(DEVCONTAINER) > .devcontainer
+
+devcontainer: .devcontainer
+
+binary: devcontainer
+	docker run -v $(PWD):/go/src/app --entrypoint /bin/sh $(DEVCONTAINER) -c 'go-package-setup && make $(APP)'
+
+godeps:
+	docker run -v $(PWD):/go/src/app --entrypoint /bin/sh $(DEVCONTAINER) -c 'go-package-setup && godeps save'
+
+$(APP): $(APP).go
+	go-package-setup
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 godep go build -a -installsuffix cgo --ldflags '-w' ./$(APP).go
+
+container: kubegateway
+	docker build -t $(PREFIX)/$(APP):$(TAG) .
 
 push:
 	gcloud docker push $(PREFIX)/$(APP):$(TAG)
 
-
-buildp: buildgo builddocker
-
-run: buildp  
-	docker run \
-	    -p 8080:80 $(PREFIX)/$(APP)
-
-test:	clean
-	godep go test -v --vmodule=*=4 -timeout=5s ./...
-
-debug:  
-ifndef $(instrument)  
-	godebug run ${gofiles}
-else  
-	godebug run -instrument=${instrument} ${gofiles}
-endif 
-
-.PHONY: all buildgo builddocker push clean test debug
-
-all: builddocker
-
 clean:
 	rm -f $(APP)
+
+test: clean
+	godep go test -v --vmodule=*=4
