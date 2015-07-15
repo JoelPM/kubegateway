@@ -2,36 +2,23 @@
 # MAINTAINER: Tim Hockin <thockin@google.com>
 # If you update this image please bump the tag value before pushing.
 
-.PHONY: all kubegateway container push clean test
 
 APP = kubegateway
 
 TAG = 0.0.2
 PREFIX = joelpm
 
-
-DEVCONTAINER = $(PREFIX)/$(APP)_dev:1.4.2
-
+.PHONY: all kubegateway container push clean test
 
 all: container
 
-.devcontainer:
-	docker build -t $(DEVCONTAINER) .
-	docker inspect -f '{{.Id}}' $(DEVCONTAINER) > .devcontainer
-
-devcontainer: .devcontainer
-
-binary: devcontainer
-	docker run -v $(PWD):/go/src/app --entrypoint /bin/sh $(DEVCONTAINER) -c 'go-package-setup && make $(APP)'
-
-godeps:
-	docker run -v $(PWD):/go/src/app --entrypoint /bin/sh $(DEVCONTAINER) -c 'go-package-setup && godeps save'
+deps:
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go get
 
 $(APP): $(APP).go
-	go-package-setup
-	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 godep go build -a -installsuffix cgo --ldflags '-w' ./$(APP).go
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 godep go build -a --ldflags '-w' -o $(APP) ./$(APP).go
 
-container: kubegateway
+container: binary
 	docker build -t $(PREFIX)/$(APP):$(TAG) .
 
 push:

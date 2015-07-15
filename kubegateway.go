@@ -1,5 +1,5 @@
 // kubegateway is a bridge between Kubernetes services and the outside world.
-package kubegateway // import "github.com/joelpm/kubegateway"
+package main // import "github.com/joelpm/kubegateway"
 
 import (
 	"flag"
